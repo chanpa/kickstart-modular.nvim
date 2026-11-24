@@ -105,17 +105,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  -- Python: type checking/navigation plus Ruff linting and fixes.
+  basedpyright = {},
+  ruff = {},
+
+  -- Rust
+  rust_analyzer = {},
+
+  -- JavaScript / TypeScript (works in Node and Bun projects)
+  ts_ls = {},
+  eslint = {},
+
   -- tsc = {},
   --
-  -- Some languages (like rust) have entire language plugins that can be useful:
-  --    https://github.com/mrcjkb/rustaceanvim
-  --
-  -- But for many setups, the LSP (`rust_analyzer`) will work just fine
-  -- rust_analyzer = {},
-
-  stylua = {}, -- Used to format Lua code
-
   -- Special Lua Config, as recommended by neovim help docs
   lua_ls = {
     on_init = function(client)
@@ -171,9 +173,10 @@ require('mason-lspconfig').setup {
 --    :Mason
 --
 -- You can press `g?` for help in this menu.
-local ensure_installed = vim.tbl_keys(servers or {})
+local ensure_installed = vim.tbl_keys(servers)
 vim.list_extend(ensure_installed, {
-  -- You can add other tools here that you want Mason to install
+  -- Formatters and other standalone tools are installed here, not enabled as LSPs.
+  'stylua',
 })
 
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
