@@ -166,20 +166,27 @@ require('mason-lspconfig').setup {
   automatic_enable = false, -- Change this to true if you want to automatically enable servers that are installed manually (e.g. via :Mason / :MasonInstall)
 }
 
--- Ensure the servers and tools above are installed
+-- mason-tool-installer expects Mason package names, which can differ from
+-- Neovim's LSP config names (for example, ts_ls -> typescript-language-server).
 --
 -- To check the current status of installed tools and/or manually install
 -- other tools, you can run
 --    :Mason
 --
 -- You can press `g?` for help in this menu.
-local ensure_installed = vim.tbl_keys(servers)
-vim.list_extend(ensure_installed, {
-  -- Formatters and other standalone tools are installed here, not enabled as LSPs.
-  'stylua',
-})
-
-require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+require('mason-tool-installer').setup {
+  ensure_installed = {
+    'basedpyright',
+    'ruff',
+    'rust-analyzer',
+    'typescript-language-server',
+    'eslint-lsp',
+    'lua-language-server',
+    'stylua',
+    'prettier',
+    'shfmt',
+  },
+}
 
 for name, server in pairs(servers) do
   vim.lsp.config(name, server)
