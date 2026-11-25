@@ -1,12 +1,4 @@
-local function gh(repo) return 'https://github.com/' .. repo end
-
 -- [[ Configure Treesitter ]]
--- vim.pack is the plugin manager used by this configuration.
-vim.pack.add {
-  { src = gh 'neovim-treesitter/treesitter-parser-registry' },
-  { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' },
-  { src = gh 'nvim-treesitter/nvim-treesitter-context' },
-}
 
 require('treesitter-context').setup {
   max_lines = 4,

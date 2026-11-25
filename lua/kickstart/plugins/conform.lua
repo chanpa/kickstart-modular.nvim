@@ -1,7 +1,4 @@
-local function gh(repo) return 'https://github.com/' .. repo end
-
 -- [[ Formatting ]]
-vim.pack.add { gh 'stevearc/conform.nvim' }
 require('conform').setup {
   notify_on_error = false,
   -- Format every buffer for which an external formatter or formatting LSP is available.

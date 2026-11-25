@@ -79,9 +79,8 @@ for the tradeoffs between the two approaches.
 > Your repo's URL will be something like this:
 > `https://github.com/<your_github_username>/kickstart-modular.nvim.git`
 
-You likely want to remove `nvim-pack-lock.json` from your repo's `.gitignore`
-file too - it's ignored in the kickstart repo to make maintenance easier, but
-it's recommended to track it in version control (see `:help vim.pack-lockfile`).
+Track `lazy-lock.json` in version control so your plugins stay pinned to the same
+revisions across machines.
 
 #### Clone kickstart.nvim
 
@@ -122,10 +121,8 @@ Start Neovim
 nvim
 ```
 
-That's it! `vim.pack` will install all the plugins from your config. Use
-`:lua vim.pack.update(nil, { offline = true })` to inspect plugin state and
-`:lua vim.pack.update()` to fetch updates (`:write` applies updates, `:quit`
-cancels them).
+That's it! `lazy.nvim` will install the plugins from your config. Use `:Lazy`
+to inspect plugins, install updates, and manage them.
 
 #### Read The Friendly Documentation
 
@@ -184,33 +181,32 @@ After installing all the dependencies continue with the [Install Kickstart](#ins
 #### Windows Installation
 
 <details><summary>Windows with Microsoft C++ Build Tools and CMake</summary>
-Kickstart's default config is make-only for `telescope-fzf-native.nvim`.
-If `make` is unavailable, the plugin is skipped.
+The default config builds `telescope-fzf-native.nvim` with `make`. If `make` is
+unavailable, the plugin is skipped.
 
 Recommended: install `make` (see the chocolatey section below).
 
-If you want a CMake-only setup, customize these two modules:
-
-1. In `lua/kickstart/plugins/telescope.lua`, include `telescope-fzf-native.nvim` when `cmake` is available:
-
-```lua
-if vim.fn.executable 'make' == 1 or vim.fn.executable 'cmake' == 1 then
-  table.insert(telescope_plugins, gh 'nvim-telescope/telescope-fzf-native.nvim')
-end
-```
-
-2. In the `PackChanged` hook in `lua/pack.lua`, use CMake when `make` is unavailable:
+If you want a CMake-only setup, customize the `telescope-fzf-native.nvim`
+dependency in `lua/plugins.lua` to accept `cmake` and use Lazy's `build`
+function:
 
 ```lua
-if name == 'telescope-fzf-native.nvim' then
+cond = function() return vim.fn.executable 'make' == 1 or vim.fn.executable 'cmake' == 1 end,
+build = function(plugin)
+  local commands
   if vim.fn.executable 'make' == 1 then
-    run_build(name, { 'make' }, ev.data.path)
-  elseif vim.fn.executable 'cmake' == 1 then
-    run_build(name, { 'cmake', '-S.', '-Bbuild', '-DCMAKE_BUILD_TYPE=Release' }, ev.data.path)
-    run_build(name, { 'cmake', '--build', 'build', '--config', 'Release', '--target', 'install' }, ev.data.path)
+    commands = { { 'make' } }
+  else
+    commands = {
+      { 'cmake', '-S.', '-Bbuild', '-DCMAKE_BUILD_TYPE=Release' },
+      { 'cmake', '--build', 'build', '--config', 'Release', '--target', 'install' },
+    }
   end
-  return
-end
+  for _, command in ipairs(commands) do
+    local result = vim.system(command, { cwd = plugin.dir }):wait()
+    if result.code ~= 0 then error(result.stderr or 'telescope-fzf-native build failed') end
+  end
+end,
 ```
 
 See `telescope-fzf-native` documentation for [build details](https://github.com/nvim-telescope/telescope-fzf-native.nvim#installation).
