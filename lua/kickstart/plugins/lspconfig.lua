@@ -46,15 +46,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     -- Rename the variable under your cursor.
     --  Most Language Servers support renaming across files, etc.
-    map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
+    map('grn', vim.lsp.buf.rename, 'Re[n]ame')
 
     -- Execute a code action, usually your cursor needs to be on top of an error
     -- or a suggestion from your LSP for this to activate.
-    map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+    map('gra', vim.lsp.buf.code_action, 'Code [a]ction', { 'n', 'x' })
 
     -- WARN: This is not Goto Definition, this is Goto Declaration.
     --  For example, in C this would take you to the header.
-    map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    map('grD', vim.lsp.buf.declaration, 'Goto [D]eclaration')
+
+    map('grH', vim.lsp.buf.hover, '[H]over documentation')
 
     -- The following two autocommands are used to highlight references of the
     -- word under your cursor when your cursor rests there for a little while.
